@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Claude Connectors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --surface: rgba(255, 255, 255, 0.78);
+    --surface-solid: #ffffff;
+    --text: #17161a;
+    --muted: #6c6a73;
+    --border: rgba(23, 22, 26, 0.08);
+    --shadow: 0 1px 2px rgba(20, 18, 30, 0.04), 0 8px 24px rgba(20, 18, 30, 0.06);
+    --shadow-hover: 0 2px 4px rgba(20, 18, 30, 0.06), 0 18px 40px rgba(20, 18, 30, 0.12);
+    --blob1: #ffd8c2;
+    --blob2: #d9d4ff;
+    --blob3: #c8f0e0;
+    --ok: #1f9d55;
+    --warn: #d08a1c;
+    --chip: rgba(23, 22, 26, 0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f0f13;
+      --surface: rgba(28, 28, 36, 0.72);
+      --surface-solid: #1c1c24;
+      --text: #f1f0f5;
+      --muted: #9b99a6;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+      --shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 18px 40px rgba(0, 0, 0, 0.45);
+      --blob1: #5a2a1a;
+      --blob2: #2b2560;
+      --blob3: #123d30;
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --chip: rgba(255, 255, 255, 0.05);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f0f13;
+    --surface: rgba(28, 28, 36, 0.72);
+    --surface-solid: #1c1c24;
+    --text: #f1f0f5;
+    --muted: #9b99a6;
+    --border: rgba(255, 255, 255, 0.08);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 18px 40px rgba(0, 0, 0, 0.45);
+    --blob1: #5a2a1a;
+    --blob2: #2b2560;
+    --blob3: #123d30;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --chip: rgba(255, 255, 255, 0.05);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.55 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Soft colour blobs behind the hero */
+  .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .bg span {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.7;
+  }
+  .bg span:nth-child(1) { width: 520px; height: 520px; background: var(--blob1); top: -160px; left: -120px; }
+  .bg span:nth-child(2) { width: 480px; height: 480px; background: var(--blob2); top: -120px; right: -140px; }
+  .bg span:nth-child(3) { width: 420px; height: 420px; background: var(--blob3); top: 260px; left: 35%; opacity: 0.45; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 16px 72px; }
+
+  /* Hero */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); background: var(--surface); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 99px; backdrop-filter: blur(10px);
+  }
+  .eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 20%, transparent); }
+  h1 {
+    font-size: clamp(36px, 6vw, 60px); line-height: 1.05; letter-spacing: -0.035em;
+    font-weight: 800; margin: 18px 0 12px;
+  }
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(100deg, #ff7a45 0%, #e0458f 45%, #6d5dfc 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lede { color: var(--muted); font-size: 17px; max-width: 560px; margin: 0; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 36px 0 28px; }
+  .stat {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px 20px; box-shadow: var(--shadow); backdrop-filter: blur(12px);
+  }
+  .stat b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -0.03em; }
+  .stat span { color: var(--muted); font-size: 13px; font-weight: 500; }
+
+  /* Sticky toolbar: search + category pills */
+  .toolbar {
+    position: sticky; top: 0; z-index: 10; padding: 12px 0;
+    margin: 0 -16px; padding-left: 16px; padding-right: 16px;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+  }
+  .toolbar.stuck { border-bottom-color: var(--border); }
+  .searchbox { position: relative; }
+  .searchbox svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+  .search {
+    width: 100%; padding: 13px 14px 13px 42px; font: inherit; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--surface-solid); color: var(--text);
+    box-shadow: var(--shadow);
+  }
+  .search:focus { outline: none; border-color: #6d5dfc; box-shadow: 0 0 0 4px rgba(109, 93, 252, 0.18); }
+  .pills { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .pills::-webkit-scrollbar { display: none; }
+  .pill {
+    flex: none; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--text); text-decoration: none;
+    background: var(--surface-solid); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 99px; transition: transform .15s, border-color .15s;
+  }
+  .pill:hover { transform: translateY(-1px); border-color: var(--accent); }
+  .pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  /* Category sections */
+  section.cat { margin-top: 44px; scroll-margin-top: 130px; }
+  .cat-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .cat-icon {
+    width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, transparent), color-mix(in srgb, var(--accent) 8%, transparent));
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .cat-head h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .cat-head p { margin: 0; color: var(--muted); font-size: 13px; }
+  .cat-head .count {
+    margin-left: auto; font-size: 12px; font-weight: 600; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    padding: 4px 10px; border-radius: 99px;
+  }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+  .card {
+    position: relative; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px; box-shadow: var(--shadow); backdrop-filter: blur(12px);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+    background: linear-gradient(90deg, var(--brand), color-mix(in srgb, var(--brand) 30%, transparent));
+    opacity: 0; transition: opacity .2s;
+  }
+  .card::after {
+    content: ""; position: absolute; width: 160px; height: 160px; right: -60px; top: -60px; border-radius: 50%;
+    background: var(--brand); opacity: 0.06; filter: blur(30px); transition: opacity .2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: color-mix(in srgb, var(--brand) 35%, var(--border)); }
+  .card:hover::before { opacity: 1; }
+  .card:hover::after { opacity: 0.16; }
+  .card-top { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    flex: none; width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: 16px; letter-spacing: -0.02em;
+    background: linear-gradient(140deg, color-mix(in srgb, var(--brand) 78%, #fff), var(--brand) 60%);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 35%, transparent), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .card h3 { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ok); font-weight: 500; }
+  .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .card p { margin: 12px 0 14px; color: var(--muted); font-size: 13.5px; min-height: 2.9em; }
+  .bar { height: 6px; border-radius: 99px; background: var(--chip); overflow: hidden; }
+  .bar span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--brand) 60%, #fff), var(--brand)); }
+  .tools { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .tools b { color: var(--text); font-weight: 600; }
+
+  /* Pending */
+  .pending {
+    margin-top: 56px; padding: 24px; border-radius: 20px;
+    background: var(--surface); border: 1px dashed color-mix(in srgb, var(--warn) 45%, var(--border));
+    backdrop-filter: blur(12px);
+  }
+  .pending h2 { margin: 0 0 4px; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .pending h2 .count { font-size: 12px; font-weight: 600; color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); padding: 3px 10px; border-radius: 99px; }
+  .pending .note { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--surface-solid); border: 1px solid var(--border); border-radius: 99px;
+    padding: 5px 12px 5px 6px; font-size: 13px; font-weight: 500;
+  }
+  .chip b {
+    width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 10px; color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent);
+  }
+
+  .empty { text-align: center; color: var(--muted); padding: 48px 0; }
+  .hidden { display: none !important; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 12px; text-align: center; }
+
+  @media (max-width: 720px) {
+    .wrap { padding-top: 36px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .cat-head p { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow"><i></i>Live in Claude · Oct 2026</span>
+    <h1>My Claude <em>Connectors</em></h1>
+    <p class="lede">Every app and service plugged into my Claude account, grouped by what it helps me do.</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar" id="toolbar">
+    <div class="searchbox">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input class="search" id="q" type="search" placeholder="Search connectors — try “google”, “design” or “payments”" aria-label="Search connectors">
+    </div>
+    <nav class="pills" id="pills" aria-label="Categories"></nav>
+  </div>
+
+  <main id="sections"></main>
+  <p class="empty hidden" id="empty">No connectors match that search.</p>
+
+  <section class="pending" id="pending">
+    <h2>Installed, waiting for sign-in <span class="count" id="pendingCount"></span></h2>
+    <p class="note">These come with my plugins. Claude can use them once I sign in.</p>
+    <div class="chips" id="pendingChips"></div>
+  </section>
+
+  <footer>Snapshot taken October 18, 2026 · The bar shows how many tools each connector gives Claude.</footer>
+</div>
+
+<script>
+const categories = [
+  { name: "Google Workspace", emoji: "📨", accent: "#4285f4", blurb: "Mail, calendar and office files", items: [
+    { n: "Gmail", d: "Search, read, draft and send email", t: 30, c: "#ea4335", i: "M" },
+    { n: "Google Calendar", d: "Events, invites and free-time suggestions", t: 9, c: "#1a73e8", i: "31" },
+    { n: "Google Drive", d: "Find, read, create and share files", t: 11, c: "#188038", i: "D" },
+    { n: "Google Docs", d: "Read and edit documents", t: 2, c: "#4285f4", i: "Do" },
+    { n: "Google Sheets", d: "Read and write spreadsheet values", t: 9, c: "#0f9d58", i: "Sh" },
+    { n: "Google Slides", d: "Read and update presentations", t: 4, c: "#f4a400", i: "Sl" },
+  ]},
+  { name: "Notes & Docs", emoji: "📝", accent: "#8b7355", blurb: "Knowledge and writing", items: [
+    { n: "Notion", d: "Pages, databases, comments and calendar", t: 65, c: "#37352f", i: "N" },
+    { n: "Claude Docs", d: "Living docs Claude creates and edits", t: 8, c: "#d97757", i: "CD" },
+  ]},
+  { name: "Design & Creative", emoji: "🎨", accent: "#a259ff", blurb: "Visuals, mockups and diagrams", items: [
+    { n: "Canva", d: "Create, edit and export designs", t: 43, c: "#00b5c4", i: "C" },
+    { n: "Figma", d: "Design-to-code, FigJam and design systems", t: 42, c: "#a259ff", i: "F" },
+    { n: "Visualize", d: "Inline charts, diagrams and widgets", t: 2, c: "#e0458f", i: "V" },
+  ]},
+  { name: "Websites, Hosting & Dev", emoji: "🚀", accent: "#6d5dfc", blurb: "Build, host and ship", items: [
+    { n: "Vercel", d: "Deployments, domains, logs and analytics", t: 237, c: "#18181b", i: "▲" },
+    { n: "Supabase", d: "Postgres database, edge functions, branches", t: 29, c: "#3ecf8e", i: "S" },
+    { n: "WordPress.com", d: "Sites, posts, pages and plugins", t: 19, c: "#21759b", i: "W" },
+    { n: "Base44", d: "AI app builder", t: 24, c: "#ff6b35", i: "B" },
+    { n: "GoDaddy", d: "Domain availability and suggestions", t: 2, c: "#00a4a6", i: "G" },
+    { n: "Desktop Commander", d: "Local files, terminal and processes", t: 25, c: "#475569", i: ">_" },
+  ]},
+  { name: "Commerce & Payments", emoji: "🛍️", accent: "#16a34a", blurb: "Selling and getting paid", items: [
+    { n: "Shopify", d: "Products, orders, customers and analytics", t: 40, c: "#5e8e3e", i: "S" },
+    { n: "Stripe", d: "Payments API, analytics and docs", t: 11, c: "#635bff", i: "S" },
+  ]},
+  { name: "Marketing & Automation", emoji: "⚡", accent: "#ff4f00", blurb: "Campaigns and workflows", items: [
+    { n: "Intuit Mailchimp", d: "Email campaigns and analytics", t: 9, c: "#d4a000", i: "M" },
+    { n: "Zapier", d: "Connect to 9,000+ apps", t: 17, c: "#ff4f00", i: "Z" },
+    { n: "Scheduled Tasks", d: "Run Claude tasks on a schedule", t: 6, c: "#b45309", i: "⏱" },
+  ]},
+  { name: "Data & AI", emoji: "📊", accent: "#0ea5e9", blurb: "Querying and search", items: [
+    { n: "Google Cloud BigQuery", d: "Run SQL over datasets and tables", t: 9, c: "#4386fa", i: "BQ" },
+    { n: "Pinecone", d: "Vector database search and indexing", t: 9, c: "#1c17ff", i: "P" },
+  ]},
+  { name: "Travel & Careers", emoji: "✈️", accent: "#e11d48", blurb: "Trips and jobs", items: [
+    { n: "Expedia", d: "Search flights and hotels", t: 2, c: "#1e2a5a", i: "E" },
+    { n: "Indeed", d: "Search jobs and company data", t: 4, c: "#2164f3", i: "in" },
+  ]},
+];
+
+const pending = [
+  "Adobe", "Ahrefs", "Airwallex", "Amplitude", "Apollo.io", "Asana", "Atlassian", "BigQuery (plugin)",
+  "Canva (plugin)", "Clay", "ClickUp", "Datadog", "DocuSign", "Emergent", "Expensify", "Figma (plugin)",
+  "Fireflies", "GitHub", "Gusto", "Hex", "HubSpot", "Intercom", "Klaviyo", "Linear", "Mailchimp (plugin)",
+  "Miro", "monday.com", "MYOB", "Notion (plugin)", "PagerDuty", "PayPal", "Pendo", "QuickBooks", "Ramp",
+  "RingEX", "Similarweb", "Slack", "Square", "Stripe (plugin)", "Supermetrics", "TikTok", "Trello", "Wix",
+  "Xero", "Zapier (plugin)", "Zoho Books", "Zoho CRM", "Zoho Desk", "Zoho Projects", "Zoom",
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+const all = categories.flatMap(c => c.items);
+const maxTools = Math.max(...all.map(i => i.t));
+// Square-root scale so Vercel's 237 doesn't flatten every other bar
+const barPct = t => Math.max(6, Math.round(Math.sqrt(t / maxTools) * 100));
+
+const root = document.getElementById("sections");
+const pills = document.getElementById("pills");
+
+categories.forEach(cat => {
+  const id = slug(cat.name);
+  pills.insertAdjacentHTML("beforeend",
+    `<a class="pill" href="#${id}" style="--accent:${cat.accent}"><i></i>${esc(cat.name)}</a>`);
+
+  const sec = document.createElement("section");
+  sec.className = "cat";
+  sec.id = id;
+  sec.style.setProperty("--accent", cat.accent);
+  sec.innerHTML = `
+    <div class="cat-head">
+      <div class="cat-icon">${cat.emoji}</div>
+      <div><h2>${esc(cat.name)}</h2><p>${esc(cat.blurb)}</p></div>
+      <span class="count">${cat.items.length} connected</span>
+    </div>
+    <div class="grid"></div>`;
+  const grid = sec.querySelector(".grid");
+  cat.items.forEach(it => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.style.setProperty("--brand", it.c);
+    card.dataset.text = `${it.n} ${it.d} ${cat.name}`.toLowerCase();
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="logo">${esc(it.i)}</div>
+        <div><h3>${esc(it.n)}</h3><span class="status">Connected</span></div>
+      </div>
+      <p>${esc(it.d)}</p>
+      <div class="bar"><span style="width:${barPct(it.t)}%"></span></div>
+      <div class="tools"><span>Tools</span><b>${it.t}</b></div>`;
+    grid.appendChild(card);
+  });
+  root.appendChild(sec);
+});
+
+const chips = document.getElementById("pendingChips");
+pending.forEach(p => {
+  const c = document.createElement("span");
+  c.className = "chip";
+  c.dataset.text = p.toLowerCase();
+  c.innerHTML = `<b>${esc(p[0])}</b>${esc(p)}`;
+  chips.appendChild(c);
+});
+document.getElementById("pendingCount").textContent = pending.length;
+
+const tools = all.reduce((s, i) => s + i.t, 0);
+document.getElementById("stats").innerHTML = [
+  [all.length, "Connected"], [categories.length, "Categories"], [tools, "Tools available"], [pending.length, "Awaiting sign-in"],
+].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+
+// Border under the toolbar once it sticks
+const toolbar = document.getElementById("toolbar");
+new IntersectionObserver(([e]) => toolbar.classList.toggle("stuck", e.intersectionRatio < 1),
+  { threshold: [1], rootMargin: "-1px 0px 0px 0px" }).observe(toolbar);
+
+document.getElementById("q").addEventListener("input", e => {
+  const q = e.target.value.trim().toLowerCase();
+  let total = 0;
+  document.querySelectorAll("section.cat").forEach(sec => {
+    let shown = 0;
+    sec.querySelectorAll(".card").forEach(card => {
+      const hit = !q || card.dataset.text.includes(q);
+      card.classList.toggle("hidden", !hit);
+      if (hit) shown++;
+    });
+    sec.classList.toggle("hidden", shown === 0);
+    pills.querySelector(`[href="#${sec.id}"]`).classList.toggle("hidden", shown === 0);
+    total += shown;
+  });
+  let pShown = 0;
+  chips.querySelectorAll(".chip").forEach(c => {
+    const hit = !q || c.dataset.text.includes(q);
+    c.classList.toggle("hidden", !hit);
+    if (hit) pShown++;
+  });
+  document.getElementById("pending").classList.toggle("hidden", pShown === 0);
+  document.getElementById("empty").classList.toggle("hidden", total + pShown > 0);
+});
+</script>
+</body>
+</html>
