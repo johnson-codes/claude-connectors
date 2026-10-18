@@ -22,6 +22,7 @@
     --blob3: #c8f0e0;
     --ok: #1f9d55;
     --warn: #d08a1c;
+    --bad: #d64545;
     --chip: rgba(23, 22, 26, 0.04);
   }
   @media (prefers-color-scheme: dark) {
@@ -39,6 +40,8 @@
       --blob3: #123d30;
       --ok: #4ade80;
       --warn: #fbbf24;
+    --bad: #f87171;
+      --bad: #f87171;
       --chip: rgba(255, 255, 255, 0.05);
     }
   }
@@ -56,6 +59,7 @@
     --blob3: #123d30;
     --ok: #4ade80;
     --warn: #fbbf24;
+    --bad: #f87171;
     --chip: rgba(255, 255, 255, 0.05);
   }
 
@@ -207,6 +211,9 @@
     font-size: 10px; color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent);
   }
 
+  .pending.broken { margin-top: 16px; border-color: color-mix(in srgb, var(--bad) 45%, var(--border)); }
+  .pending.broken h2 .count { color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, transparent); }
+  .pending.broken .chip b { color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, transparent); }
   .empty { text-align: center; color: var(--muted); padding: 48px 0; }
   .hidden { display: none !important; }
   footer { margin-top: 48px; color: var(--muted); font-size: 12px; text-align: center; }
@@ -250,7 +257,13 @@
     <div class="chips" id="pendingChips"></div>
   </section>
 
-  <footer>Snapshot taken October 18, 2026 · The bar shows how many tools each connector gives Claude.</footer>
+  <section class="pending broken" id="broken">
+    <h2>Installed, not connecting <span class="count" id="brokenCount"></span></h2>
+    <p class="note">These plugins failed to connect, usually because no server address is set up. They need fixing in the plugin settings.</p>
+    <div class="chips" id="brokenChips"></div>
+  </section>
+
+  <footer>Last checked October 18, 2026 · The bar shows how many tools each connector gives Claude.</footer>
 </div>
 
 <script>
@@ -308,6 +321,8 @@ const pending = [
   "Xero", "Zapier (plugin)", "Zoho Books", "Zoho CRM", "Zoho Desk", "Zoho Projects", "Zoom",
 ];
 
+const broken = ["PDF Viewer", "Definite", "Snowflake", "Databricks"];
+
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 const all = categories.flatMap(c => c.items);
@@ -353,15 +368,18 @@ categories.forEach(cat => {
   root.appendChild(sec);
 });
 
-const chips = document.getElementById("pendingChips");
-pending.forEach(p => {
-  const c = document.createElement("span");
-  c.className = "chip";
-  c.dataset.text = p.toLowerCase();
-  c.innerHTML = `<b>${esc(p[0])}</b>${esc(p)}`;
-  chips.appendChild(c);
+const chipGroups = [["pending", pending], ["broken", broken]];
+chipGroups.forEach(([id, list]) => {
+  const box = document.getElementById(id + "Chips");
+  list.forEach(p => {
+    const c = document.createElement("span");
+    c.className = "chip";
+    c.dataset.text = p.toLowerCase();
+    c.innerHTML = `<b>${esc(p[0])}</b>${esc(p)}`;
+    box.appendChild(c);
+  });
+  document.getElementById(id + "Count").textContent = list.length;
 });
-document.getElementById("pendingCount").textContent = pending.length;
 
 const tools = all.reduce((s, i) => s + i.t, 0);
 document.getElementById("stats").innerHTML = [
@@ -387,14 +405,17 @@ document.getElementById("q").addEventListener("input", e => {
     pills.querySelector(`[href="#${sec.id}"]`).classList.toggle("hidden", shown === 0);
     total += shown;
   });
-  let pShown = 0;
-  chips.querySelectorAll(".chip").forEach(c => {
-    const hit = !q || c.dataset.text.includes(q);
-    c.classList.toggle("hidden", !hit);
-    if (hit) pShown++;
+  chipGroups.forEach(([id]) => {
+    let shown = 0;
+    document.querySelectorAll(`#${id}Chips .chip`).forEach(c => {
+      const hit = !q || c.dataset.text.includes(q);
+      c.classList.toggle("hidden", !hit);
+      if (hit) shown++;
+    });
+    document.getElementById(id).classList.toggle("hidden", shown === 0);
+    total += shown;
   });
-  document.getElementById("pending").classList.toggle("hidden", pShown === 0);
-  document.getElementById("empty").classList.toggle("hidden", total + pShown > 0);
+  document.getElementById("empty").classList.toggle("hidden", total > 0);
 });
 </script>
 </body>
