@@ -148,6 +148,8 @@
     background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, transparent), color-mix(in srgb, var(--accent) 8%, transparent));
     border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   }
+  .cat-icon.brand { background: #fff; border-color: rgba(23, 22, 26, 0.08); }
+  .cat-icon.brand img { width: 24px; height: 24px; }
   .cat-head h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
   .cat-head p { margin: 0; color: var(--muted); font-size: 13px; }
   .cat-head .count {
@@ -315,7 +317,7 @@ const categories = [
     { n: "Google Cloud BigQuery", d: "Run SQL over datasets and tables", t: 9, c: "#4386fa", i: "BQ" },
     { n: "Pinecone", d: "Vector database search and indexing", t: 9, c: "#1c17ff", i: "P" },
   ]},
-  { name: "Microsoft", emoji: "🪟", accent: "#0078d4", blurb: "Microsoft 365 apps, not connected to Claude yet", items: [
+  { name: "Microsoft", mark: "logos/microsoft/microsoft.svg", accent: "#0078d4", blurb: "Microsoft 365 apps, not connected to Claude yet", items: [
     { n: "Microsoft Teams", d: "Chats, channels and meetings", planned: true, c: "#5b5fc7", i: "T" },
     { n: "Outlook Email", d: "Read, sort and send work email", planned: true, c: "#0078d4", i: "E" },
     { n: "Outlook Calendar", d: "Meetings, invites and schedules", planned: true, c: "#0078d4", i: "C" },
@@ -481,7 +483,7 @@ categories.forEach(cat => {
   sec.style.setProperty("--accent", cat.accent);
   sec.innerHTML = `
     <div class="cat-head">
-      <div class="cat-icon">${cat.emoji}</div>
+      <div class="cat-icon${cat.mark ? " brand" : ""}">${cat.mark ? `<img src="${esc(cat.mark)}" alt="">` : cat.emoji}</div>
       <div><h2>${esc(cat.name)}</h2><p>${esc(cat.blurb)}</p></div>
       <span class="count">${cat.items.length} ${cat.items.some(i => i.planned) ? "apps" : "connected"}</span>
     </div>
