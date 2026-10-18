@@ -184,9 +184,14 @@
   }
   .logo svg { width: 26px; height: 26px; }
   .logo img, .chip b img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .logo img.fit { width: 30px; height: 30px; object-fit: contain; }
+  .chip b img.fit { width: 16px; height: 16px; object-fit: contain; }
   .card h3 { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
   .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ok); font-weight: 500; }
   .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .status.off { color: var(--muted); }
+  .status.off::before { background: transparent; border: 1.5px solid currentColor; width: 4px; height: 4px; }
+  .soon { font-size: 12px; color: var(--muted); padding-top: 8px; border-top: 1px dashed var(--border); }
   .card p { margin: 12px 0 14px; color: var(--muted); font-size: 13.5px; min-height: 2.9em; }
   .bar { height: 6px; border-radius: 99px; background: var(--chip); overflow: hidden; }
   .bar span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--brand) 60%, #fff), var(--brand)); }
@@ -310,6 +315,26 @@ const categories = [
     { n: "Google Cloud BigQuery", d: "Run SQL over datasets and tables", t: 9, c: "#4386fa", i: "BQ" },
     { n: "Pinecone", d: "Vector database search and indexing", t: 9, c: "#1c17ff", i: "P" },
   ]},
+  { name: "Microsoft", emoji: "🪟", accent: "#0078d4", blurb: "Microsoft 365 apps, not connected to Claude yet", items: [
+    { n: "Microsoft Teams", d: "Chats, channels and meetings", planned: true, c: "#5b5fc7", i: "T" },
+    { n: "Outlook Email", d: "Read, sort and send work email", planned: true, c: "#0078d4", i: "E" },
+    { n: "Outlook Calendar", d: "Meetings, invites and schedules", planned: true, c: "#0078d4", i: "C" },
+    { n: "Microsoft Planner", d: "Team task boards and plans", planned: true, c: "#7b3fbf", i: "P" },
+    { n: "Microsoft Forms", d: "Surveys, quizzes and polls", planned: true, c: "#038387", i: "F" },
+    { n: "Microsoft Word", d: "Write and edit documents", planned: true, c: "#185abd", i: "W" },
+    { n: "Microsoft Excel", d: "Spreadsheets and data analysis", planned: true, c: "#107c41", i: "E" },
+    { n: "Microsoft PowerPoint", d: "Build and present slide decks", planned: true, c: "#c43e1c", i: "P" },
+    { n: "Microsoft Bookings", d: "Appointment scheduling for customers", planned: true, c: "#00a2ad", i: "B" },
+    { n: "OneDrive", d: "Cloud file storage and sharing", planned: true, c: "#0364b8", i: "O" },
+    { n: "Power BI", d: "Dashboards and business reports", planned: true, c: "#e8b50f", i: "B" },
+    { n: "Power Automate", d: "Workflow automation across apps", planned: true, c: "#0066ff", i: "A" },
+    { n: "Microsoft Project", d: "Project schedules and timelines", planned: true, c: "#31752f", i: "P" },
+    { n: "Microsoft To Do", d: "Personal to-do lists and reminders", planned: true, c: "#2564cf", i: "D" },
+    { n: "Microsoft Whiteboard", d: "Freeform canvas for brainstorming", planned: true, c: "#2b7bd6", i: "W" },
+    { n: "Microsoft Loop", d: "Shared workspaces and live components", planned: true, c: "#7b52e8", i: "L" },
+    { n: "Microsoft Places", d: "Plan office days and book desks and rooms", planned: true, c: "#0078d4", i: "P" },
+    { n: "Microsoft Visio", d: "Diagrams, flowcharts and org charts", planned: true, c: "#3955a3", i: "V" },
+  ]},
   { name: "Travel & Careers", emoji: "✈️", accent: "#e11d48", blurb: "Trips and jobs", items: [
     { n: "Expedia", d: "Search flights and hotels", t: 2, c: "#1e2a5a", i: "E" },
     { n: "Indeed", d: "Search jobs and company data", t: 4, c: "#2164f3", i: "in" },
@@ -403,6 +428,24 @@ const LOGOS = {
   "Zoho Desk": "zoho",
   "Zoho Projects": "zoho",
   "Zoom": "zoom",
+  "Microsoft Teams": "logos/microsoft/teams.svg",
+  "Outlook Email": "logos/microsoft/outlook.svg",
+  "Outlook Calendar": "logos/microsoft/outlook.svg",
+  "Microsoft Planner": "logos/microsoft/planner.svg",
+  "Microsoft Forms": "logos/microsoft/forms.svg",
+  "Microsoft Word": "logos/microsoft/word.svg",
+  "Microsoft Excel": "logos/microsoft/excel.svg",
+  "Microsoft PowerPoint": "logos/microsoft/powerpoint.svg",
+  "Microsoft Bookings": "logos/microsoft/bookings.svg",
+  "OneDrive": "logos/microsoft/onedrive.svg",
+  "Power BI": "logos/microsoft/powerbi.svg",
+  "Power Automate": "logos/microsoft/powerautomate.svg",
+  "Microsoft Project": "logos/microsoft/project.svg",
+  "Microsoft To Do": "logos/microsoft/todo.svg",
+  "Microsoft Whiteboard": "logos/microsoft/whiteboard.png",
+  "Microsoft Loop": "logos/microsoft/loop.svg",
+  "Microsoft Places": "logos/microsoft/places.png",
+  "Microsoft Visio": "logos/microsoft/visio.svg",
   "Definite": "logos/definite.png",
   "Snowflake": "snowflake",
   "Databricks": "databricks"
@@ -410,7 +453,7 @@ const LOGOS = {
 
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-const all = categories.flatMap(c => c.items);
+const all = categories.flatMap(c => c.items).filter(i => !i.planned);
 const maxTools = Math.max(...all.map(i => i.t));
 // Square-root scale so Vercel's 237 doesn't flatten every other bar
 const barPct = t => Math.max(6, Math.round(Math.sqrt(t / maxTools) * 100));
@@ -419,7 +462,7 @@ const barPct = t => Math.max(6, Math.round(Math.sqrt(t / maxTools) * 100));
 function logo(name, fallback) {
   const key = LOGOS[name] || LOGOS[name.replace(/ \(plugin\)$/, "")];
   if (!key) return null;
-  if (key.includes("/")) return `<img src="${esc(key)}" alt="" loading="lazy">`;
+  if (key.includes("/")) return `<img src="${esc(key)}" alt="" loading="lazy"${key.endsWith(".svg") ? ' class="fit"' : ""}>`;
   const [hex, d] = ICONS[key];
   return `<svg viewBox="0 0 24 24" fill="${hex}" aria-hidden="true"><path d="${d}"/></svg>`;
 }
@@ -440,7 +483,7 @@ categories.forEach(cat => {
     <div class="cat-head">
       <div class="cat-icon">${cat.emoji}</div>
       <div><h2>${esc(cat.name)}</h2><p>${esc(cat.blurb)}</p></div>
-      <span class="count">${cat.items.length} connected</span>
+      <span class="count">${cat.items.length} ${cat.items.some(i => i.planned) ? "apps" : "connected"}</span>
     </div>
     <div class="grid"></div>`;
   const grid = sec.querySelector(".grid");
@@ -452,11 +495,12 @@ categories.forEach(cat => {
     card.innerHTML = `
       <div class="card-top">
         <div class="logo">${logo(it.n) || esc(it.i)}</div>
-        <div><h3>${esc(it.n)}</h3><span class="status">Connected</span></div>
+        <div><h3>${esc(it.n)}</h3><span class="status${it.planned ? " off" : ""}">${it.planned ? "Not connected yet" : "Connected"}</span></div>
       </div>
       <p>${esc(it.d)}</p>
+      ${it.planned ? `<div class="soon">Add it in Claude's Connectors settings</div>` : `
       <div class="bar"><span style="width:${barPct(it.t)}%"></span></div>
-      <div class="tools"><span>Tools</span><b>${it.t}</b></div>`;
+      <div class="tools"><span>Tools</span><b>${it.t}</b></div>`}`;
     grid.appendChild(card);
   });
   root.appendChild(sec);
