@@ -333,8 +333,9 @@ const categories = [
     { n: "Pinecone", d: "Vector database search and indexing", t: 9, c: "#1c17ff", i: "P" },
     { n: "Google AI Studio", d: "Prototype with Gemini models and get API keys", planned: true, note: "Not available as a Claude connector yet", c: "#4285f4", i: "AI" },
   ]},
-  { name: "Video Editing", emoji: "🎬", accent: "#007808", blurb: "Command-line tools Claude uses to edit video and audio", items: [
+  { name: "Video Editing", emoji: "🎬", accent: "#007808", blurb: "Command-line tools Claude uses to edit video and create sound", items: [
     { n: "FFmpeg", d: "Cut, trim, convert, compress and merge video and audio files", local: true, c: "#007808", i: "FF" },
+    { n: "FFmpeg Soundtracks", d: "Generate soundtracks from tones, beats and ambient sound, then mix them under video", local: true, c: "#007808", i: "FF" },
   ]},
   { name: "Microsoft", mark: "logos/microsoft/microsoft.svg", accent: "#0078d4", blurb: "Microsoft 365 apps, not connected to Claude yet", items: [
     { n: "Microsoft Teams", d: "Chats, channels and meetings", planned: true, c: "#5b5fc7", i: "T" },
@@ -391,6 +392,7 @@ const LOGOS = {
   "Claude Slides": "claude",
   "Claude Sites": "claude",
   "FFmpeg": "ffmpeg",
+  "FFmpeg Soundtracks": "ffmpeg",
   "Google AI Studio": "logos/googleaistudio.png",
   "Built-in Browser": "claude",
   "Browser Takeover": "claude",
@@ -502,7 +504,8 @@ function logo(name, fallback) {
 function countLabel(items) {
   const n = items.filter(i => !i.planned && !i.builtin && !i.local).length;
   if (n === items.length) return `${n} connected`;
-  if (n === 0) return items.length === 1 ? "1 tool" : `${items.length} apps`;
+  if (items.every(i => i.local)) return items.length === 1 ? "1 tool" : `${items.length} tools`;
+  if (n === 0) return `${items.length} apps`;
   return `${n} connected · ${items.length - n} more`;
 }
 
