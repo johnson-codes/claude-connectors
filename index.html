@@ -331,6 +331,7 @@ const categories = [
   { name: "Data & AI", emoji: "📊", accent: "#0ea5e9", blurb: "Querying and search", items: [
     { n: "Google Cloud BigQuery", d: "Run SQL over datasets and tables", t: 9, c: "#4386fa", i: "BQ" },
     { n: "Pinecone", d: "Vector database search and indexing", t: 9, c: "#1c17ff", i: "P" },
+    { n: "Google AI Studio", d: "Prototype with Gemini models and get API keys", planned: true, note: "Not available as a Claude connector yet", c: "#4285f4", i: "AI" },
   ]},
   { name: "Video Editing", emoji: "🎬", accent: "#007808", blurb: "Command-line tools Claude uses to edit video and audio", items: [
     { n: "FFmpeg", d: "Cut, trim, convert, compress and merge video and audio files", local: true, c: "#007808", i: "FF" },
@@ -390,6 +391,7 @@ const LOGOS = {
   "Claude Slides": "claude",
   "Claude Sites": "claude",
   "FFmpeg": "ffmpeg",
+  "Google AI Studio": "logos/googleaistudio.png",
   "Built-in Browser": "claude",
   "Browser Takeover": "claude",
   "Terminal Access": "claude",
@@ -497,6 +499,13 @@ function logo(name, fallback) {
   return `<svg viewBox="0 0 24 24" fill="${hex}" aria-hidden="true"><path d="${d}"/></svg>`;
 }
 
+function countLabel(items) {
+  const n = items.filter(i => !i.planned && !i.builtin && !i.local).length;
+  if (n === items.length) return `${n} connected`;
+  if (n === 0) return items.length === 1 ? "1 tool" : `${items.length} apps`;
+  return `${n} connected · ${items.length - n} more`;
+}
+
 function statusTag(it) {
   if (it.builtin) return `<span class="status builtin">Built into Claude</span>`;
   if (it.local) return `<span class="status local">Installed on my Mac</span>`;
@@ -520,7 +529,7 @@ categories.forEach(cat => {
     <div class="cat-head">
       <div class="cat-icon${cat.mark ? " brand" : ""}">${cat.mark ? `<img src="${esc(cat.mark)}" alt="">` : cat.emoji}</div>
       <div><h2>${esc(cat.name)}</h2><p>${esc(cat.blurb)}</p></div>
-      <span class="count">${cat.items.length} ${cat.items.some(i => i.planned || i.builtin || i.local) ? (cat.items.length === 1 ? "tool" : "apps") : "connected"}</span>
+      <span class="count">${countLabel(cat.items)}</span>
     </div>
     <div class="grid"></div>`;
   const grid = sec.querySelector(".grid");
@@ -535,7 +544,7 @@ categories.forEach(cat => {
         <div><h3>${esc(it.n)}</h3>${statusTag(it)}</div>
       </div>
       <p>${esc(it.d)}</p>
-      ${it.local ? `<div class="soon">Claude runs it through Terminal Access</div>` : it.builtin ? `<div class="soon">Built into Claude, no setup needed</div>` : it.planned ? `<div class="soon">Add it in Claude's Connectors settings</div>` : `
+      ${it.local ? `<div class="soon">Claude runs it through Terminal Access</div>` : it.builtin ? `<div class="soon">Built into Claude, no setup needed</div>` : it.planned ? `<div class="soon">${esc(it.note || "Add it in Claude's Connectors settings")}</div>` : `
       <div class="bar"><span style="width:${barPct(it.t)}%"></span></div>
       <div class="tools"><span>Tools</span><b>${it.t}</b></div>`}`;
     grid.appendChild(card);
