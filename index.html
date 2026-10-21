@@ -282,13 +282,18 @@
 
 <script>
 const categories = [
-  { name: "Claude", mark: "logos/claude.svg", accent: "#d97757", featured: true, blurb: "Claude's own tools, built right in", items: [
+  { name: "Claude", mark: "logos/claude.svg", accent: "#d97757", featured: true, blurb: "Claude's own tools and skills, built right in", items: [
     { n: "Claude Design", d: "Visual designs, prototypes and design systems on a canvas", builtin: true, c: "#d97757", i: "CD" },
     { n: "Claude Docs", d: "Living docs Claude creates and edits", t: 8, c: "#d97757", i: "CD" },
     { n: "Claude Motion", d: "Animated motion graphics and short videos", builtin: true, c: "#d97757", i: "CM" },
     { n: "Claude Slides", d: "Slide decks that download as PowerPoint or PDF", builtin: true, c: "#d97757", i: "CS" },
     { n: "Visualize", d: "Inline charts, diagrams and widgets", t: 2, c: "#d97757", i: "V" },
     { n: "Scheduled Tasks", d: "Run Claude tasks on a schedule", t: 6, c: "#d97757", i: "⏱" },
+    { n: "Built-in Browser", d: "Browse, research and test websites in a browser inside the Claude app", builtin: true, c: "#d97757", i: "BB" },
+    { n: "Browser Takeover", d: "Claude in Chrome: Claude works right in your own Chrome tabs", builtin: true, c: "#d97757", i: "BT" },
+    { n: "Terminal Access", d: "Run commands, scripts and dev servers on your computer", builtin: true, c: "#d97757", i: "TA" },
+    { n: "Claude Security", d: "Security reviews that catch leaked keys and unsafe code before you deploy", builtin: true, c: "#d97757", i: "CS" },
+    { n: "Claude Dashboard", d: "Live dashboards built from your own data", builtin: true, c: "#d97757", i: "DB" },
   ]},
   { name: "Google Workspace", emoji: "📨", accent: "#4285f4", blurb: "Mail, calendar and office files", items: [
     { n: "Gmail", d: "Search, read, draft and send email", t: 30, c: "#ea4335", i: "M" },
@@ -378,6 +383,11 @@ const LOGOS = {
   "Claude Design": "claude",
   "Claude Motion": "claude",
   "Claude Slides": "claude",
+  "Built-in Browser": "claude",
+  "Browser Takeover": "claude",
+  "Terminal Access": "claude",
+  "Claude Security": "claude",
+  "Claude Dashboard": "claude",
   "Canva": "logos/canva.jpg",
   "Figma": "figma",
   "Visualize": "claude",
