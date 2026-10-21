@@ -282,11 +282,13 @@
 
 <script>
 const categories = [
-  { name: "Claude", mark: "logos/claude.svg", accent: "#d97757", featured: true, blurb: "Claude's own creative tools, built right in", items: [
+  { name: "Claude", mark: "logos/claude.svg", accent: "#d97757", featured: true, blurb: "Claude's own tools, built right in", items: [
     { n: "Claude Design", d: "Visual designs, prototypes and design systems on a canvas", builtin: true, c: "#d97757", i: "CD" },
     { n: "Claude Docs", d: "Living docs Claude creates and edits", t: 8, c: "#d97757", i: "CD" },
     { n: "Claude Motion", d: "Animated motion graphics and short videos", builtin: true, c: "#d97757", i: "CM" },
     { n: "Claude Slides", d: "Slide decks that download as PowerPoint or PDF", builtin: true, c: "#d97757", i: "CS" },
+    { n: "Visualize", d: "Inline charts, diagrams and widgets", t: 2, c: "#d97757", i: "V" },
+    { n: "Scheduled Tasks", d: "Run Claude tasks on a schedule", t: 6, c: "#d97757", i: "⏱" },
   ]},
   { name: "Google Workspace", emoji: "📨", accent: "#4285f4", blurb: "Mail, calendar and office files", items: [
     { n: "Gmail", d: "Search, read, draft and send email", t: 30, c: "#ea4335", i: "M" },
@@ -302,7 +304,6 @@ const categories = [
   { name: "Design & Creative", emoji: "🎨", accent: "#a259ff", blurb: "Visuals, mockups and diagrams", items: [
     { n: "Canva", d: "Create, edit and export designs", t: 43, c: "#00b5c4", i: "C" },
     { n: "Figma", d: "Design-to-code, FigJam and design systems", t: 42, c: "#a259ff", i: "F" },
-    { n: "Visualize", d: "Inline charts, diagrams and widgets", t: 2, c: "#e0458f", i: "V" },
   ]},
   { name: "Websites, Hosting & Dev", emoji: "🚀", accent: "#6d5dfc", blurb: "Build, host and ship", items: [
     { n: "Vercel", d: "Deployments, domains, logs and analytics", t: 237, c: "#18181b", i: "▲" },
@@ -319,7 +320,6 @@ const categories = [
   { name: "Marketing & Automation", emoji: "⚡", accent: "#ff4f00", blurb: "Campaigns and workflows", items: [
     { n: "Intuit Mailchimp", d: "Email campaigns and analytics", t: 9, c: "#d4a000", i: "M" },
     { n: "Zapier", d: "Connect to 9,000+ apps", t: 17, c: "#ff4f00", i: "Z" },
-    { n: "Scheduled Tasks", d: "Run Claude tasks on a schedule", t: 6, c: "#b45309", i: "⏱" },
   ]},
   { name: "Data & AI", emoji: "📊", accent: "#0ea5e9", blurb: "Querying and search", items: [
     { n: "Google Cloud BigQuery", d: "Run SQL over datasets and tables", t: 9, c: "#4386fa", i: "BQ" },
